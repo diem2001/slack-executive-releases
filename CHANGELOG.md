@@ -6,6 +6,17 @@ to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## v0.0.9 — 2026-06-13
+
+### Added
+- **Richer Brain cards** — every card now shows its type (color-coded border + label), the channels it came from, decision metadata ("decided … · by …"), and a "confidence: low" hint on single-source extractions; sections are ordered by importance (recency-weighted evidence) with counts and explicit "Show more (+50)" paging.
+- **Sharper Ask answers** — questions are first parsed into a search query plus person/channel/time filters ("what did Ben decide about pricing in May?"), with safe fallback to the plain question; the parsing prompt is editable under Settings → Skills.
+
+### Fixed
+- **Brain stays responsive during updates** — with a large knowledge base the Brain view no longer freezes while an update runs; progress now updates only the progress panel, and cards render progressively as you scroll.
+
+---
+
 ## v0.0.8 — 2026-06-12
 
 ### Changed
