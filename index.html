@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slack Executive — Your Slack, distilled to what matters</title>
+<meta name="description" content="A native macOS app that reads your Slack channels and delivers an executive digest — decisions, open questions, critical updates — with a local LLM if you want. Signed, notarized, read-only by design.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  /* All product screenshots on this page show FICTIONAL demo data
+     (workspace "Aurora Labs") — no real workspace content. */
+  :root{
+    --bg:hsl(222 47% 5%); --bg2:hsl(222 47% 7%); --card:hsl(222 47% 9%);
+    --fg:hsl(210 40% 96%); --muted:hsl(215 18% 62%); --border:hsl(217 33% 16%);
+    --accent:hsl(211 100% 62%); --emerald:hsl(152 55% 58%); --amber:hsl(38 92% 60%); --sky:hsl(199 89% 62%);
+    --display:"Fraunces", Georgia, serif;
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;line-height:1.6;}
+  ::selection{background:hsl(211 100% 60% / .35);}
+  a{color:inherit;text-decoration:none;}
+  img{display:block;max-width:100%;height:auto;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
+
+  /* atmosphere */
+  .glow{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(640px 420px at 18% -4%, hsl(211 100% 55% / .14), transparent 65%),
+      radial-gradient(720px 480px at 88% 12%, hsl(250 80% 58% / .10), transparent 65%);}
+  .grain{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");}
+  main{position:relative;z-index:2;}
+
+  /* nav */
+  nav{position:relative;z-index:3;}
+  .nav-inner{display:flex;align-items:center;gap:14px;padding:26px 0;}
+  .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,hsl(211 90% 55%),hsl(250 75% 60%));
+    display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;letter-spacing:.02em;}
+  .brand{font-size:15px;font-weight:650;letter-spacing:-.01em;}
+  .nav-links{margin-left:auto;display:flex;align-items:center;gap:26px;font-size:13px;color:var(--muted);}
+  .nav-links a:hover{color:var(--fg);}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:9px;font-size:13.5px;font-weight:600;
+    padding:10px 18px;border:1px solid var(--border);background:var(--card);transition:.18s;}
+  .btn:hover{border-color:hsl(217 33% 28%);transform:translateY(-1px);}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 24px hsl(211 100% 55% / .3);}
+  .btn.primary:hover{box-shadow:0 10px 30px hsl(211 100% 55% / .42);}
+  .btn.big{font-size:15px;padding:13px 26px;border-radius:11px;}
+
+  /* hero */
+  .hero{padding:64px 0 30px;text-align:center;}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);
+    border:1px solid var(--border);border-radius:99px;padding:6px 14px;background:hsl(222 47% 8% / .8);}
+  .badge i{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 8px var(--emerald);}
+  h1{font-family:var(--display);font-weight:520;font-size:clamp(40px,6.2vw,72px);line-height:1.06;
+    letter-spacing:-.022em;margin:26px auto 22px;max-width:880px;}
+  h1 em{font-style:italic;color:var(--accent);}
+  .sub{font-size:18px;color:var(--muted);max-width:680px;margin:0 auto 34px;}
+  .sub b{color:var(--fg);font-weight:600;}
+  .cta-row{display:flex;justify-content:center;gap:14px;margin-bottom:14px;}
+  .cta-note{font-size:12px;color:var(--muted);opacity:.85;}
+
+  .shot{border-radius:14px;border:1px solid hsl(217 33% 20%);
+    box-shadow:0 30px 90px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.025) inset;}
+  .hero-shot{margin:56px auto 0;max-width:1060px;position:relative;}
+  .hero-shot::before{content:"";position:absolute;inset:-8% -12% auto;height:120%;z-index:-1;
+    background:radial-gradient(60% 55% at 50% 38%, hsl(211 100% 55% / .17), transparent 70%);}
+
+  /* value strip */
+  .strip{padding:84px 0 10px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .vcard{border:1px solid var(--border);border-radius:14px;background:hsl(222 47% 8% / .7);padding:26px 26px 24px;}
+  .vcard .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;margin-bottom:16px;font-size:16px;}
+  .vcard h3{font-size:16px;font-weight:650;margin-bottom:8px;letter-spacing:-.01em;}
+  .vcard p{font-size:13.5px;color:var(--muted);}
+  .ic.blue{background:hsl(211 100% 55% / .14);} .ic.green{background:hsl(152 60% 45% / .14);} .ic.amberbg{background:hsl(38 92% 50% / .14);}
+
+  /* sections */
+  section.feature{padding:96px 0 0;}
+  .kicker{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;}
+  .k-blue{color:var(--accent);} .k-green{color:var(--emerald);} .k-amber{color:var(--amber);} .k-sky{color:var(--sky);}
+  h2{font-family:var(--display);font-weight:520;font-size:clamp(28px,3.6vw,40px);line-height:1.14;letter-spacing:-.018em;margin:12px 0 16px;}
+  .feature p.lead{font-size:15.5px;color:var(--muted);max-width:620px;}
+  .feature p.lead b{color:var(--fg);font-weight:600;}
+  .ticks{list-style:none;margin-top:22px;display:flex;flex-direction:column;gap:11px;}
+  .ticks li{display:flex;gap:11px;font-size:14px;color:var(--muted);align-items:flex-start;}
+  .ticks li b{color:var(--fg);font-weight:600;}
+  .ticks li::before{content:"";width:16px;height:16px;flex-shrink:0;margin-top:4px;border-radius:50%;
+    background:hsl(152 60% 45% / .16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='hsl(152,55%25,58%25)' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4 10-10'/%3E%3C/svg%3E") center/9px no-repeat;}
+  .split{display:grid;grid-template-columns:5fr 7fr;gap:54px;align-items:center;}
+  .split.rev{grid-template-columns:7fr 5fr;}
+  .split.rev .txt{order:2;} .split.rev .img{order:1;}
+  .fullimg{margin-top:44px;}
+
+  /* privacy */
+  .privacy{margin-top:110px;padding:84px 0;background:linear-gradient(180deg,transparent,hsl(222 47% 7% / .85) 18%,hsl(222 47% 7% / .85) 82%,transparent);}
+  .privacy .head{text-align:center;max-width:640px;margin:0 auto 48px;}
+  .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .pcard{border:1px solid var(--border);border-radius:13px;background:var(--card);padding:22px 22px 20px;}
+  .pcard h4{font-size:14px;font-weight:650;margin-bottom:7px;display:flex;align-items:center;gap:9px;}
+  .pcard h4 span{font-size:15px;}
+  .pcard p{font-size:12.8px;color:var(--muted);}
+
+  /* how it works */
+  .how{padding:96px 0 20px;}
+  .how .head{text-align:center;max-width:560px;margin:0 auto 52px;}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s;}
+  .step{border:1px solid var(--border);border-radius:14px;background:hsl(222 47% 8% / .7);padding:28px 26px;position:relative;}
+  .step::before{counter-increment:s;content:counter(s);font-family:var(--display);font-size:34px;font-weight:500;
+    color:var(--accent);opacity:.9;display:block;margin-bottom:12px;}
+  .step h3{font-size:15.5px;font-weight:650;margin-bottom:8px;}
+  .step p{font-size:13.5px;color:var(--muted);}
+
+  /* download / footer */
+  .dl{padding:110px 0 90px;text-align:center;}
+  .dl h2{margin-bottom:14px;}
+  .dl .sub{margin-bottom:32px;}
+  .req{display:flex;justify-content:center;gap:24px;margin-top:26px;font-size:12.5px;color:var(--muted);}
+  .req span{display:flex;align-items:center;gap:7px;}
+  footer{border-top:1px solid var(--border);padding:34px 0 44px;font-size:12.5px;color:var(--muted);}
+  .foot-inner{display:flex;align-items:center;gap:14px;}
+  .foot-links{margin-left:auto;display:flex;gap:22px;}
+  .foot-links a:hover{color:var(--fg);}
+  .disclaimer{margin-top:14px;font-size:11.5px;opacity:.7;max-width:760px;}
+
+  @media (max-width:900px){
+    .grid3,.pgrid,.steps{grid-template-columns:1fr;}
+    .split,.split.rev{grid-template-columns:1fr;gap:28px;}
+    .split.rev .txt{order:1;} .split.rev .img{order:2;}
+    .nav-links a:not(.btn){display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="glow"></div><div class="grain"></div>
+<main>
+
+<nav class="wrap">
+  <div class="nav-inner">
+    <div class="mark">SE</div>
+    <div class="brand">Slack Executive</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="https://github.com/diem2001/slack-executive-releases/blob/main/CHANGELOG.md">Changelog</a>
+      <a class="btn primary" href="https://github.com/diem2001/slack-executive-releases/releases/latest">Download</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <span class="badge"><i></i>Signed &amp; notarized for macOS · auto-updates built in</span>
+  <h1>Your Slack, distilled to <em>what matters.</em></h1>
+  <p class="sub">Slack Executive is a native macOS app that reads your channels and hands you an
+     <b>executive digest</b> — decisions, open questions, critical updates — on your schedule.
+     Run it on a <b>local LLM</b> and nothing ever leaves your Mac.</p>
+  <div class="cta-row">
+    <a class="btn primary big" href="https://github.com/diem2001/slack-executive-releases/releases/latest">Download for macOS</a>
+    <a class="btn big" href="#features">See what it does</a>
+  </div>
+  <div class="cta-note">Apple Silicon · macOS 14+ · free during beta</div>
+  <div class="hero-shot">
+    <img class="shot" src="assets/digest-overview.png" alt="Slack Executive — executive digest with open-question lifecycle (demo data)" width="1060">
+  </div>
+</header>
+
+<div class="strip wrap">
+  <div class="grid3">
+    <div class="vcard">
+      <div class="ic blue">🔭</div>
+      <h3>Cut through the noise</h3>
+      <p>Hundreds of messages become one briefing: what was decided, what's blocked, what needs you. Color-coded by weight — decisions, open questions, FYI.</p>
+    </div>
+    <div class="vcard">
+      <div class="ic amberbg">🧭</div>
+      <h3>Nothing falls through</h3>
+      <p>Open questions are tracked as living items across days — new, tracked, resolved, dismissed — until someone actually answers, not until the scrollback swallows them.</p>
+    </div>
+    <div class="vcard">
+      <div class="ic green">🔒</div>
+      <h3>Your data stays yours</h3>
+      <p>Read-only by design, credentials in the macOS Keychain, and a local-first AI setup: with LM Studio, the model runs on your own machine.</p>
+    </div>
+  </div>
+</div>
+
+<div id="features"></div>
+
+<section class="feature wrap">
+  <div class="split">
+    <div class="txt">
+      <span class="kicker k-blue">Executive digest</span>
+      <h2>Every channel, distilled to its substance</h2>
+      <p class="lead">On your schedule — morning and evening, or whenever you ask — Slack Executive reads each
+         monitored channel and writes a digest a chief of staff would hand you: <b>decisions</b> in green,
+         <b>open questions</b> in amber, <b>FYI</b> in blue. Every item links back to the exact Slack messages
+         it came from.</p>
+      <ul class="ticks">
+        <li><b>Evidence, not vibes</b> — each item carries an "Open in Slack" link to its source thread.</li>
+        <li><b>An executive summary across channels</b> tells you in three sentences whether today needs you.</li>
+        <li>Quiet channels stay quiet — no padding, no filler.</li>
+      </ul>
+    </div>
+    <div class="img"><img class="shot" src="assets/digest-channels.png" alt="Per-channel digests with decisions, open questions and FYI (demo data)"></div>
+  </div>
+</section>
+
+<section class="feature wrap">
+  <div>
+    <span class="kicker k-amber">Open-question lifecycle</span>
+    <h2>Questions don't dissolve in the scrollback</h2>
+    <p class="lead">An unanswered question from Tuesday is still unanswered on Friday — so the app keeps it on the
+       board. Questions move through <b>new → tracked → resolved</b>, with the resolution quoted once someone
+       answers. You can dismiss the noise and reopen anything with one click.</p>
+  </div>
+  <div class="fullimg"><img class="shot" src="assets/lifecycle.png" alt="Open questions tracked across days: new, tracked, resolved, dismissed (demo data)"></div>
+</section>
+
+<section class="feature wrap">
+  <div class="split rev">
+    <div class="txt">
+      <span class="kicker k-sky">Transparent runs</span>
+      <h2>A glass box, not a black box</h2>
+      <p class="lead">Every digest run shows its four phases — fetch, summarize, overall picture, open-question
+         check — with clear AI / no-AI badges and live progress per channel. Cancel anytime; pause the Brain and
+         resume it later.</p>
+      <ul class="ticks">
+        <li><b>Smart sync skip</b> — channels already fresh over the live connection aren't re-fetched.</li>
+        <li>Background runs stay visible from anywhere in the app via the sidebar indicator.</li>
+        <li>A full log view when you want to see exactly what happened.</li>
+      </ul>
+    </div>
+    <div class="img"><img class="shot" src="assets/digest-run.png" alt="Digest run with four-phase stepper and AI badges (demo data)"></div>
+  </div>
+</section>
+
+<section class="feature wrap">
+  <div class="split">
+    <div class="txt">
+      <span class="kicker k-blue">The Brain</span>
+      <h2>Ask your workspace anything</h2>
+      <p class="lead">The Brain continuously embeds your subscribed channels into a local knowledge base.
+         Ask in plain language — <b>"What did we decide about the pricing tiers?"</b> — and get an answer
+         with the exact channels and message counts it drew from.</p>
+      <ul class="ticks">
+        <li>Answers cite their sources — channel, message count, date range.</li>
+        <li>Knows what's still open: tracked questions surface right in the answer.</li>
+        <li>Updates itself nightly, or on demand.</li>
+      </ul>
+    </div>
+    <div class="img"><img class="shot" src="assets/brain.png" alt="Brain: question answering over the workspace with cited sources (demo data)"></div>
+  </div>
+</section>
+
+<section class="feature wrap">
+  <div class="split rev">
+    <div class="txt">
+      <span class="kicker k-green">Atlassian follow-through</span>
+      <h2>From checklist to checked-off</h2>
+      <p class="lead">Point it at a Confluence task page and it closes the loop for you: it validates who's done
+         what, groups open tasks by person, and drafts the <b>reminder DMs</b> — which you review and send with
+         one click. Replies are read and classified, but only the ticked checkbox counts as done.</p>
+      <ul class="ticks">
+        <li><b>"Reports done — awaiting Confluence check-off"</b> — a claim is an indication, never the truth.</li>
+        <li>Reminders read like a human wrote them — including the plainly pasted page link.</li>
+        <li>A workflow funnel — open → drafts → reminded → replies — shows where the bottleneck is.</li>
+      </ul>
+    </div>
+    <div class="img"><img class="shot" src="assets/atlassian-validation.png" alt="Atlassian task validation grouped by assignee with reminder drafts (demo data)"></div>
+  </div>
+</section>
+
+<section class="feature wrap">
+  <div class="split">
+    <div class="txt">
+      <span class="kicker k-sky">Bring your own model</span>
+      <h2>Your model, your machine, your budget</h2>
+      <p class="lead">Run everything on a <b>local model via LM Studio</b> — recommended and tuned out of the box —
+         or plug in Anthropic or any OpenAI-compatible endpoint as a fallback. Profiles are tested with one click,
+         embedding model included.</p>
+      <ul class="ticks">
+        <li>Reasoning control for thinking models — "off" makes local digests ~10× faster.</li>
+        <li>Every token budget is user-configurable; nothing is a hidden constant.</li>
+        <li>Built-in recommended Mac setup for 16 GB and 32 GB machines.</li>
+      </ul>
+    </div>
+    <div class="img"><img class="shot" src="assets/settings-llm.png" alt="AI profiles: local LM Studio with reasoning control, cloud fallback (demo data)"></div>
+  </div>
+</section>
+
+<section class="feature wrap">
+  <div class="split rev">
+    <div class="txt">
+      <span class="kicker k-amber">Precise scope</span>
+      <h2>You decide what it reads — channel by channel</h2>
+      <p class="lead">Subscribing a channel feeds the Brain; whether it also appears in the digest is a separate
+         switch. New channels start Brain-only and earn their digest slot. Reconnect a different workspace and
+         the catalog re-scopes itself — the old workspace's data is kept frozen and returns when you do.</p>
+      <ul class="ticks">
+        <li>DMs and group DMs are excluded from digests by design.</li>
+        <li>Schedules respect your activity window — runs outside it are deferred, never silent.</li>
+        <li>Full backup &amp; restore reproduces your setup on a fresh Mac.</li>
+      </ul>
+    </div>
+    <div class="img"><img class="shot" src="assets/settings-channels.png" alt="Channel scope: Brain subscription and per-channel digest switches (demo data)"></div>
+  </div>
+</section>
+
+<div id="privacy"></div>
+<section class="privacy">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker k-green">Privacy &amp; trust</span>
+      <h2>Built like it handles your company's nervous system</h2>
+      <p class="lead" style="margin:0 auto;">Because it does. Every architectural decision starts from "read, don't touch".</p>
+    </div>
+    <div class="pgrid">
+      <div class="pcard"><h4><span>🔑</span>Keychain only</h4><p>Slack credentials, API keys and cookies live exclusively in the macOS Keychain — never in files, databases, logs or error messages.</p></div>
+      <div class="pcard"><h4><span>👻</span>Invisible by default</h4><p>The app never emits typing indicators, presence changes or any client-originated visible event. Reading leaves no trace.</p></div>
+      <div class="pcard"><h4><span>📵</span>Read-only by design</h4><p>The one optional write — marking digested channels as read — is opt-in, narrowly scoped, fully logged, and never touches DMs.</p></div>
+      <div class="pcard"><h4><span>💻</span>Local-first AI</h4><p>With LM Studio, summaries, the Brain and embeddings are computed on your own hardware. No cloud account required.</p></div>
+      <div class="pcard"><h4><span>🕰️</span>Polite traffic</h4><p>Activity windows, rate limiting and jitter govern every Slack call. Stealth mode keeps scheduled runs inside working hours.</p></div>
+      <div class="pcard"><h4><span>🧳</span>Yours to take</h4><p>One backup file carries every setting, credential reference and dataset — restore it on a new Mac and you're exactly where you left off.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="how wrap">
+  <div class="head">
+    <span class="kicker k-blue">Getting started</span>
+    <h2>Three steps to your first briefing</h2>
+  </div>
+  <div class="steps">
+    <div class="step"><h3>Connect your workspace</h3><p>One click imports your existing Slack session from Chrome — no password, no bot, no admin approval. Multiple workspaces? Pick one.</p></div>
+    <div class="step"><h3>Choose your channels</h3><p>Pick what feeds the Brain and what makes the digest. The app suggests sensible defaults; you stay in control, channel by channel.</p></div>
+    <div class="step"><h3>Get your digest</h3><p>Run the first digest right from onboarding — or let the schedule deliver it morning and evening. From then on, Slack reads itself.</p></div>
+  </div>
+</section>
+
+<section class="dl wrap">
+  <h2>Start reading less. Start missing nothing.</h2>
+  <p class="sub">Download the latest signed build — the app keeps itself up to date from here.</p>
+  <div class="cta-row">
+    <a class="btn primary big" href="https://github.com/diem2001/slack-executive-releases/releases/latest">Download for macOS</a>
+    <a class="btn big" href="https://github.com/diem2001/slack-executive-releases/blob/main/CHANGELOG.md">Read the changelog</a>
+  </div>
+  <div class="req">
+    <span>✓ Apple Silicon (M-series)</span>
+    <span>✓ macOS 14+</span>
+    <span>✓ Signed &amp; notarized by Apple</span>
+    <span>✓ In-app auto-update</span>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-inner">
+      <div class="mark" style="width:26px;height:26px;border-radius:7px;font-size:10px;">SE</div>
+      <span>© 2026 DiemIT · Slack Executive</span>
+      <div class="foot-links">
+        <a href="https://github.com/diem2001/slack-executive-releases/releases/latest">Releases</a>
+        <a href="https://github.com/diem2001/slack-executive-releases/blob/main/CHANGELOG.md">Changelog</a>
+      </div>
+    </div>
+    <p class="disclaimer">All product screenshots show a fictional demo workspace ("Aurora Labs") — no real customer data.
+       Slack Executive is an independent product and is not affiliated with, endorsed by, or sponsored by Slack
+       Technologies / Salesforce or Atlassian. English and German UI included.</p>
+  </div>
+</footer>
+
+</main>
+</body>
+</html>
