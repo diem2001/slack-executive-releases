@@ -40,9 +40,9 @@ Run it on a **local LLM** and nothing ever leaves your Mac.
 ## Every channel, distilled to its substance
 
 On your schedule — morning and evening, or whenever you ask — Slack Executive reads each monitored
-channel and writes a digest a chief of staff would hand you. Every item carries an
-**"Open in Slack"** link to the exact source thread, and an executive summary across channels tells
-you in three sentences whether today needs you.
+channel and writes a digest a chief of staff would hand you. Click any item to jump to the exact
+source messages in Slack, and an executive summary across channels tells you in three sentences
+whether today needs you.
 
 <img src="assets/digest-channels.png" alt="Per-channel digests with decisions, open questions and FYI (demo data)">
 
@@ -71,9 +71,10 @@ anywhere in the app.
 
 ## Ask your workspace anything
 
-The Brain continuously embeds your subscribed channels into a local knowledge base. Ask in plain
-language — *"What did we decide about the pricing tiers?"* — and get an answer that **cites its
-sources**: channel, message count, date range. Open questions surface right in the answer.
+The Brain continuously distills your subscribed channels into a living knowledge base — projects,
+decisions, actions, risks, a glossary, people. Ask in plain language — *"What did we decide about
+the pricing tiers?"* — and get an answer that **cites its sources**, with keyword and semantic
+retrieval clearly labeled. Open questions surface right in the answer.
 
 <img src="assets/brain.png" alt="Brain: question answering over the workspace with cited sources (demo data)">
 
