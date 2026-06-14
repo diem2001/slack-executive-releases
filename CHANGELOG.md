@@ -6,6 +6,27 @@ to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## v0.0.10 — TBD
+
+### Added
+- **Silent Slack session renewal** — the app now quietly renews an expired Slack login before asking you to re-authenticate, so a digest still runs on fresh data without a credential dialog; you are only prompted to reconnect when the renewal itself can no longer succeed.
+- **Plain http:// LLM base URLs for LAN servers** — you can now save an LLM profile pointing at a local/LAN address over plain http (e.g. a remote LM Studio at `http://192.168.1.220:1234/v1`), not just localhost; public hosts still require https so the API key is never sent unencrypted.
+- **Brain card sources collapse by default** — each card's source list now starts hidden and the "N sources" line is a click/keyboard toggle (with a chevron), so cards with many sources stay compact until you expand them.
+- **Embedding-model recommendation in the profile editor** — the LLM profile recommendation box now also suggests an embedding model with enough context (32k) so long Brain chunks are not silently truncated during the semantic index.
+- **Configurable Brain chunk size cap** — a new embedding-input token budget (default 7000) bounds how much text each Brain chunk sends to the embedding model; an over-long conversation window is split into ordered, within-budget chunks instead of being truncated, and the setting is carried through backup/restore.
+- **No oversized input can break a Brain update** — every embedding input is bounded to the budget before it is sent, so a single very long message can no longer fail the run; if the server still rejects an input, the run reports it instead of silently storing a missing embedding.
+
+### Fixed
+- **A topic no longer shows as both New and Resolved at once** — when a question is answered in the same digest period it was raised, the executive summary now reflects that resolution and a continued discussion renders as a linked follow-up ("Follow-up to: …") instead of appearing as an unrelated new question beside its resolved one.
+- **Glossary and People load more cards while you scroll** — these two Brain tabs now reveal the next page automatically as you scroll instead of a "Show more" click per page; a button stays for keyboard navigation, and the Overview keeps explicit paging.
+- **Next-digest hint names the day** — the header hint now reads "next digest Monday at 08:00" (or "tomorrow at …" / a full date) when the next run is not today, instead of a bare "at 08:00" that misread as a same-day run across activity-window gaps like a Friday evening.
+- **Faster Brain updates on noisy channels** — join/leave and other system messages and emoji-only reactions are now dropped before extraction instead of being sent to the model, cutting wasted time and tokens on large backfills; a window that is all noise still advances so it is not re-scanned every run.
+- **Expired Slack session degrades visibly** — a dead Slack session now shows the "session expired — reconnect" prompt instead of silently producing a digest from stale data, and sync failures list per-channel reasons.
+- **Digest progress names the loading phase** — the run now shows "Loading messages from N channels…" while it loads messages (the longest phase when most channels are empty) instead of a content-free "Preparing…" placeholder.
+- **Ask citations open the internal chat and name their channel** — a cited source now reads "1. <title> · #channel" and clicking it opens the in-app Chats overlay anchored at the message, instead of leaving the app for the external Slack client.
+
+---
+
 ## v0.0.9 — 2026-06-13
 
 ### Added
