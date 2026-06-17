@@ -6,7 +6,27 @@ to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## v0.0.10 — TBD
+## v0.0.11 — 2026-06-17
+
+### Added
+- **Separate embedding endpoint profile** — you can now store a standalone embedding profile with its own host, model, context window, connection timeout, and API key (kept securely in the Keychain) and select which one is active; both Brain embedding paths — the nightly knowledge build and the semantic search behind Ask — then run on that endpoint with its model and timeout, and the per-chunk budget follows its context window, so embedding genuinely uses your chosen endpoint instead of the chat/reasoning host. If none is selected it falls back to the reasoning profile's embedding model exactly as before.
+- **Manage embedding profiles in Settings** — Settings → LLM-Profile now has an embedding-profile section below the reasoning profiles where you create, edit, activate, and delete embedding profiles (connection timeout edited in whole seconds) without touching files, plus an embedding-token-budget control with an auto-derive / manual-override toggle: auto-derive shows the effective value read-only, manual reveals an editable field (clamped ≥ 256) you save, and switching back to auto clears the override.
+- **Test an embedding profile's connection** — each embedding profile card now has a Test button that makes one real embedding call to that profile's own endpoint and reports the result inline (vector dimensions and latency on success, a friendly error on failure), mirroring the reasoning profile's connection test.
+- **Clear embedding vs. LLM precedence** — the LLM-Profile tab now explains in plain language how embeddings are chosen, and greys out the LLM form's optional "Embedding model" field while an embedding profile is active (it only applies as a fallback when none is), so it is obvious which endpoint your embeddings use.
+- **Large Brain runs no longer stall the embedding endpoint** — a first or big catch-up run now splits pending inputs into bounded batches (one request per batch) instead of one enormous call, so an update finishes without tripping the client timeout; cancelling keeps the work already done, and the batch limits carry through backup/restore.
+- **Existing embedding setups upgrade and back up cleanly** — on first launch after upgrade your previous single-profile embedding setup becomes a standalone, selectable embedding profile (same host, model, timeout, and effective budget — nothing changes for you), and embedding profiles, their keys, and the active selection now survive config backup/restore.
+- **Back up your Brain inside the encrypted file backup** — an optional "include Brain" choice (selectable only together with message history) carries the full knowledge base (cards, sources, chunks, embeddings, watches, runs) inside the same passphrase-encrypted file backup as your message history; importing replaces the Brain on the target machine, restoring it exactly as it was with no need to re-run extraction, and the import summary now lists the Brain rows it brought back.
+- **Proactive session check before the next digest** — the app now checks your Slack session ahead of the next scheduled digest and warns you to reconnect when a re-import is needed, instead of a run quietly failing on an expired login.
+- **One-click credential re-import** — a single action in Settings and on the session-expired screen re-imports your Slack login from the browser, validating it before replacing the stored one (your old credentials stay intact if it fails).
+- **Autonomous self-heal from the live browser session** — when your stored Slack session goes stale and a silent renewal can no longer recover it, the app now silently re-reads fresh credentials from your still-signed-in browser for the same workspace, replaces them safely, and retries — so digests keep running without you doing anything (after the one-time browser-access grant); when the browser is also signed out it leaves your credentials untouched and routes you to the reconnect prompt.
+- **Notification when a re-import is truly needed** — once auto-recovery is exhausted, an in-app notice and a native macOS notification (toggleable) both open the one-click re-import, so you act instead of silently getting stale digests.
+
+### Fixed
+- **Real-time updates recover on their own after a connection drop** — when the live Slack connection flaps (network blip, server close, transient error), the app now reconnects automatically with a bounded backoff and backfills the missed messages, instead of staying silently disconnected until you clicked "Neu verbinden"; an expired login still surfaces the reconnect prompt and stops retrying instead of looping.
+
+---
+
+## v0.0.10 — 2026-06-14
 
 ### Added
 - **Silent Slack session renewal** — the app now quietly renews an expired Slack login before asking you to re-authenticate, so a digest still runs on fresh data without a credential dialog; you are only prompted to reconnect when the renewal itself can no longer succeed.
