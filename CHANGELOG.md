@@ -6,6 +6,17 @@ to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## v0.0.12 — 2026-06-18
+
+### Added
+- **Resolve open questions with an optional note** — each still-open question in the digest now has a Resolve action that opens an inline comment field; confirming moves the question into the Resolved group right away (no new digest run), tagged "manually resolved" with your note or a muted "(no comment)" placeholder, and you can reopen it later.
+- **Referenced Jira tickets in the digest** — when enabled in Settings, the digest detects Jira tickets named in messages and weaves their live status into summaries, shows a "tracked in KEY (status)" chip on open questions, and adds a drilldown card with each ticket's status, assignee, and optional latest comments (with localized timestamps) — with clear "could not load" / "not connected" notices.
+
+### Fixed
+- **Single-reply threads no longer disappear** — a Slack message with exactly one reply now shows that reply in Chats and feeds it to the digest, instead of silently dropping it; threads with two or more replies were never affected.
+
+---
+
 ## v0.0.11 — 2026-06-17
 
 ### Added
