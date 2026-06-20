@@ -6,6 +6,25 @@ to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## v0.0.13 — 2026-06-20
+
+### Added
+- **Deliberate two-step backup restore** — restoring from a file now first lets you choose the file (showing its name) and runs only after you click "Wiederherstellen" and confirm an in-app dialog warning that the whole configuration is replaced and a safety backup is made first; the pasted-text import goes through the same confirmation, and a live per-phase step list shows what the restore is doing (done/running/pending, with item counts for message history and Brain, and a clear error if a phase fails).
+
+### Changed
+- **Open-question actions tidied into a "⋯" menu** — the Resolve, Dismiss, and Reopen actions on each open-question card now live behind a single compact overflow menu, so the question text gets the full card width and is no longer cramped by side-by-side buttons; Resolve still opens its inline comment field.
+- **Activity-window default now follows your local timezone** — the default work-hours window (Mon–Fri 07:00–19:00) is now interpreted in your Mac's local system timezone instead of always Europe/Berlin, so scheduled digests are gated by your own working hours; if you had explicitly set a window timezone, your setting is kept.
+
+### Fixed
+- **Brain tab opens fast on large brains** — the overview now loads its cards with a small fixed number of database queries regardless of how many cards your Brain holds, instead of two queries per card, so opening the Brain tab no longer slows down as the Brain grows; the cards, names, and mentions shown are exactly the same.
+- **Faster launch with a visible loading screen** — the app window now appears immediately with a "Starting up…" indicator (and a per-step note while the database opens and updates) instead of staying invisible until everything finished loading, so a large Brain no longer means a blank wait; if startup ever fails, a clear retryable error screen is shown rather than a stuck spinner.
+- **Scheduled digests now fire at your local time** — a digest configured for e.g. 14:00 now runs at 14:00 in your Mac's local timezone instead of 14:00 UTC (which was 15:00/16:00 for Berlin users and further off elsewhere); existing schedules will shift to the correct local hour, and the next-run time shown in the app now matches when it actually fires.
+- **Open digest view refreshes after a scheduled run** — when a scheduled digest completes while the app is open on the Digest view, the view now updates to the new digest and "last run" time automatically, instead of keeping an earlier manual run's stale timestamp until you reloaded; a cancelled scheduled run leaves the view on the previous digest.
+- **Restored digest questions work again** — after restoring a backup with message history onto a machine already connected to the same workspace, opening, resolving, or dismissing an open question in the restored digest no longer fails with "tracked question … not found"; the question now resolves by its channel and anchor message instead of a machine-specific id.
+- **Deleting a tracked action list clears its reminder history** — removing a list now also purges its "Reminder sent to …" entries from the RECENT ACTIVITY feed (and sweeps any left over from earlier deletes), instead of leaving them lingering after the list is gone.
+
+---
+
 ## v0.0.12 — 2026-06-18
 
 ### Added
