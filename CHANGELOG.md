@@ -6,6 +6,17 @@ to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## v0.0.14 — 2026-06-26
+
+### Added
+- **Digest history with read state** — a new "Verlauf" view under Digest lists your past executive summaries newest-first and opens any one — including those generated while you were away — in the full digest rendering at the same width as the main Digest, with every item drillable to its source (in-app Chat and Slack links); an unread badge on the Digest nav shows how many you have not read, and you can explicitly mark a summary read (the latest or any past one) or mark all read, while viewing or drilling into a source alone never marks anything.
+- **Live progress while a backup is created** — creating a backup now reports a per-phase step list (each config area, then message history and Brain with item counts, then encrypt and write) so you can see exactly what is being saved and how far along the long steps are; a failing step is reported instead of silently swallowed.
+
+### Changed
+- **Daily digest now always belongs to the connected workspace** — after switching or restoring across Slack workspaces, the digest shown is only ever the one generated under your currently connected workspace; a digest from another workspace is no longer surfaced as the current one (you see the empty state until that workspace has its own digest, and switching back shows it again).
+
+---
+
 ## v0.0.13 — 2026-06-20
 
 ### Added
