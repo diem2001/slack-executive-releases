@@ -6,6 +6,20 @@ to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## v0.0.15 — 2026-07-03
+
+### Added
+- **Sign in to Slack inside the app** — onboarding now offers a third Connect method that opens a Slack sign-in window inside the app, so you can connect without Slack being signed in to Chrome; on success it continues to the verified workspace, and you can cancel anytime. It works on macOS and Windows, and the sign-in window stays signed in across re-opens so you don't re-accept cookies every time.
+- **Windows build pipeline** — the app now builds an NSIS installer with in-app auto-update for Windows (WebView2 provisioned at install); one update channel serves both macOS and Windows.
+- **Secure credential storage on Windows** — on Windows your Slack session is stored in the Windows Credential Manager and persists across restarts with no Chrome dependency, and all platform-specific copy — credential/device wording plus the Settings language, appearance, and session-expiry/digest notification text — correctly names Windows instead of the macOS Keychain / "this Mac" / macOS.
+- **Chrome-free on Windows** — the Windows Connect step offers exactly two methods, "Sign in to Slack" (recommended) and "Enter manually", with the Chrome import hidden everywhere; the session-expiry and Settings → Slack recovery actions likewise replace "Re-import from Chrome" with a manual Reconnect, so you are never sent to a method that isn't available.
+- **Native window chrome & menu on Windows** — on Windows the app shows native minimize/maximize/close caption buttons (no macOS traffic-light gap), a single native title bar with no redundant in-app header so the sidebar navigation sits at the top of the window, and a Windows-appropriate menu without macOS-only items (Settings/Quit under File, About under Help); macOS is unchanged.
+
+### Fixed
+- **Empty states now fill the content width** — the empty Digest, Brain onboarding, and Brain error placeholders span the full content width like the populated views, instead of a narrow centered card lost in whitespace on a large window.
+
+---
+
 ## v0.0.14 — 2026-06-26
 
 ### Added
