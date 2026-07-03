@@ -6,6 +6,20 @@ to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## v0.0.17 — 2026-07-03
+
+### Fixed
+- **In-app sign-in handles device-compliance SSO** — a workspace whose SSO requires a registered device (Microsoft Conditional Access) now fails fast and points you to Chrome import or manual entry, instead of hanging on Microsoft's "set up your device" page.
+
+---
+
+## v0.0.16 — 2026-07-03
+
+### Fixed
+- **In-app Slack sign-in works with multiple workspaces and SSO** — the sign-in window's workspace picker and the SAML "Authenticate" button are now clickable; previously accounts with more than one workspace (or a SAML-protected workspace) reached a picker where nothing responded.
+
+---
+
 ## v0.0.15 — 2026-07-03
 
 ### Added
